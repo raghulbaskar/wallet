@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: wallet-ledger-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
