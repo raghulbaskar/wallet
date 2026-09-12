@@ -1,9 +1,24 @@
 spring:
+  config:
+    import: "optional:file:/etc/secrets/application-secrets.yml"
   application:
     name: wallet-ledger-service
+  mvc:
+    problemdetails:
+      enabled: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
 
 management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health, metrics
+
+auth:
+  token-secret: ${AUTH_TOKEN_SECRET}

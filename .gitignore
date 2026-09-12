@@ -30,3 +30,8 @@ build/
 !gradle/wrapper/gradle-wrapper.properties
 .claude
 .idea
+
+# Environment secrets
+.env
+.env.*
+local-secrets.yml
