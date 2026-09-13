@@ -1,0 +1,99 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "Your Grafana Cloud hosted logs (Loki) datasource",
+      "type": "datasource",
+      "pluginId": "loki"
+    }
+  ],
+  "title": "Wallet Ledger Service - Logs",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "refresh": "30s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Live log stream",
+      "type": "logs",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending" },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "{job=\"wallet-ledger-service\"}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Domain events only (transfers, signup, login)",
+      "type": "logs",
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 12 },
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending" },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "{job=\"wallet-ledger-service\"} |~ \"event=\""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Transfer outcomes over time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=transfer_succeeded\" [1m]))",
+          "legendFormat": "succeeded"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=transfer_declined\" [1m]))",
+          "legendFormat": "declined"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=idempotent_replay_hit\" [1m]))",
+          "legendFormat": "idempotent replay"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Auth outcomes over time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=signup_success\" [1m]))",
+          "legendFormat": "signup success"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=signup_failed\" [1m]))",
+          "legendFormat": "signup failed"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=login_success\" [1m]))",
+          "legendFormat": "login success"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({job=\"wallet-ledger-service\"} |= \"event=login_failed\" [1m]))",
+          "legendFormat": "login failed"
+        }
+      ]
+    }
+  ]
+}

@@ -1,11 +1,33 @@
 <configuration>
+    <springProperty name="LOKI_URL" source="GRAFANA_LOKI_URL" defaultValue="http://localhost:9999/loki/api/v1/push"/>
+    <springProperty name="LOKI_USER" source="GRAFANA_LOKI_USER" defaultValue=""/>
+    <springProperty name="LOKI_TOKEN" source="GRAFANA_LOKI_TOKEN" defaultValue=""/>
+
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level [%X{correlationId}] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${LOKI_URL}</url>
+            <auth>
+                <username>${LOKI_USER}</username>
+                <password>${LOKI_TOKEN}</password>
+            </auth>
+        </http>
+        <labels>
+            job = wallet-ledger-service
+            level = %level
+        </labels>
+        <message>
+            <pattern>%d{HH:mm:ss.SSS} [%X{correlationId}] %logger{36} - %msg%n</pattern>
+        </message>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
+        <appender-ref ref="LOKI" />
     </root>
 </configuration>

@@ -1,8 +1,12 @@
 package com.wallet.web;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @RestController
 public class DocsController {
@@ -21,6 +25,11 @@ public class DocsController {
               </body>
             </html>
             """;
+
+    @GetMapping("/")
+    public ResponseEntity<Void> home() {
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/docs")).build();
+    }
 
     @GetMapping(value = "/docs", produces = MediaType.TEXT_HTML_VALUE)
     public String docs() {

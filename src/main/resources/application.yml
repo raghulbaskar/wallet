@@ -1,6 +1,9 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   config:
-    import: "optional:file:/etc/secrets/application-secrets.yml"
+    import: "optional:file:/etc/secrets/application-secrets.properties"
   application:
     name: wallet-ledger-service
   mvc:
@@ -10,6 +13,8 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,7 +23,19 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, metrics
+        include: health, metrics, prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+  otlp:
+    metrics:
+      export:
+        url: ${GRAFANA_OTLP_METRICS_URL:}
+        headers:
+          Authorization: ${GRAFANA_OTLP_METRICS_AUTH_HEADER:}
 
 auth:
   token-secret: ${AUTH_TOKEN_SECRET}

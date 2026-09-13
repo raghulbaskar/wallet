@@ -4,3 +4,6 @@ build
 *.md
 .claude
 .idea
+scripts
+db
+grafana
